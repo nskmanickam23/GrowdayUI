@@ -11,9 +11,8 @@ import {
   getBusinesses,
   saveBusiness,
 } from "@/application/reducers/business-reducer";
-import { Business, BusinessPageProps } from "@/utils/types/businessTypes";
 
-const BusinessPage = ({ businesses }) => {
+const BusinessPage = ({  }) => {
   const dispatch = useDispatch();
   const { data: getBusinessData, loading: getBusinessLoading, error: getBusinessError } = useSelector(businessSelectors.getBusinesses);
   const { loading: getAddBusinessLoading } = useSelector(businessSelectors.saveBusiness)
@@ -72,7 +71,7 @@ const BusinessPage = ({ businesses }) => {
 
 
   return (
-    <div className="">
+    <div className="h-full">
       <div className="flex flex-col md:flex-row  border-b dark:border dark:border-darkborder">
         <div className="flex flex-row items-center px-5">
           <div className="">
@@ -161,7 +160,7 @@ const BusinessPage = ({ businesses }) => {
       ) : (
         <div>
           {!getBusinessLoading && filteredBusinesses.length > 0 ? (
-            <div className="grid gap-7 grid-cols-1 md:grid-cols-3 px-5 pb-10 ml-5">
+            <div className="grid gap-7 grid-cols-1 md:grid-cols-4 px-5 pb-10 ml-5">
               {filteredBusinesses.map((business, index) => (
                 <div key={index}>
                   <BusinessCard

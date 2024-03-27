@@ -1,15 +1,15 @@
 import auth from "./auth-reducer";
 import business from "./business-reducer";
-import customers from "./customer-reducer";
+import customer from "./customer-reducer";
 import user from "./user-reducer";
-import member from "./member-reducer";
+import members from "./member-reducer";
 import common from "./common-reducer";
 
 const reducers = {
   auth,
   business,
-  customers,
-  member,
+  customer,
+  members,
   user,
   common,
 };

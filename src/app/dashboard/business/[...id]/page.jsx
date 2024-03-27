@@ -49,6 +49,7 @@ const EditPage = () => {
   const handleSubmit = async (e) => {
     console.log(formData, "edited form data");
     e.preventDefault();
+    console.log("after prevent default");
     dispatch(editBusiness(formData)); // Assuming editBusiness action creator takes formData as payload
   };
 

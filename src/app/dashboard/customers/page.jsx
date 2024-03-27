@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { DiscAlbum, Edit, Trash } from "lucide-react"; // Make sure to import these icons
+import { useState, useEffect } from "react";
+import { Edit, Trash } from "lucide-react"; // Make sure to import these icons
 
 import {
   addNewCustomer,
@@ -10,16 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import AddCustomerPopup from "@/components/popups/AddCustomerPopup";
 
-// export interface CustomerType {
-//     _id:any;
-//     name: string;
-//     email: string;
-//     password: string;
-//     phone: string;
-//     business_ids: string[];
-//     created_at: any;
-//     User_ids: any[];
-// }
+
 
 const CustomerDetailsPage = () => {
   const dispatch = useDispatch();
@@ -29,29 +20,33 @@ const CustomerDetailsPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [editingCustomer, setEditingCustomer] = useState(null);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = customers.slice(indexOfFirstItem, indexOfLastItem);
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const [isAddCustomerPopupOpen, setAddCustomerPopupOpen] = useState(false);
 
-  
-  useEffect(() => {
-    dispatch(getAllCustomers())
-  },[dispatch])
 
-  console.log(getCustomers,"data--");
+  useEffect(() => {
+    console.log("dispacting det all customers");
+    dispatch(getAllCustomers())
+  }, [dispatch])
+
+  console.log(getCustomers, "data--");
+
+  useEffect(() => {
+    setCustomers(getCustomers);
+  }, [setCustomers])
+
+  console.log(customers, "data--");
+
 
   const handleEdit = (customerId) => {
     setEditingCustomer(customerId);
   };
 
-  const handleSaveEdit = async () => {};
+  const handleSaveEdit = async () => { };
 
-  const handleCancelEdit = () => {};
+  const handleCancelEdit = () => { };
 
-  const handleDelete = async (customerId) => {};
+  const handleDelete = async (customerId) => { };
 
   const handleAddCustomerClick = () => {
     setAddCustomerPopupOpen(true);
@@ -68,7 +63,7 @@ const CustomerDetailsPage = () => {
   };
 
   return (
-    <div className=" border-black p-10 rounded">
+    <div className=" border-black p-10 rounded h-full">
       <div className="flex flex-row pb-4 mb-5 ">
         <div>
           <h1 className="text-xl font-bold">All customers data</h1>
@@ -98,46 +93,25 @@ const CustomerDetailsPage = () => {
           </tr>
         </thead>
         <tbody>
-          {currentItems.map((customer, index) => (
-            <tr key={`${customer._id}-${index}`} className="border-b">
-              <td className="py-4">{customer.name}</td>
-              <td className="py-4">{customer.email}</td>
-              <td className="py-4">
-                {customer.created_at && customer.created_at.$date
-                  ? new Date(customer.created_at.$date).toLocaleDateString()
-                  : ""}
-              </td>
-              <td className="py-4">{customer.phone}</td>
-              <td className="py-4 space-x-2">
-                {editingCustomer === customer._id ? (
-                  <>
-                    <button className="text-sm" onClick={handleSaveEdit}>
-                      Save
-                    </button>
-                    <button className="text-sm" onClick={handleCancelEdit}>
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      className="text-sm"
-                      onClick={() => handleEdit(customer._id)}
-                    >
-                      <Edit size={14} />
-                    </button>
-                    <button
-                      className="text-sm"
-                      onClick={() => handleDelete(customer._id)}
-                    >
-                      <Trash size={14} />
-                    </button>
-                  </>
-                )}
+          {Array.isArray(getCustomers) && getCustomers.map((getCustomers) => (
+            <tr key={getCustomers._id.$oid} className="border-b">
+              <td className="text-left py-2">{getCustomers.name}</td>
+              <td className="text-left py-2">{getCustomers.email}</td>
+              <td className="text-left py-2">{new Date(getCustomers.created_at.$date).toLocaleDateString()}</td>
+              <td className="text-left py-2">{getCustomers.phone}</td>
+              <td className="text-left py-2">
+                <button onClick={() => handleEdit(getCustomers._id.$oid)} className="text-blue-500 mr-2">
+                  <Edit size={20} />
+                </button>
+                <button onClick={() => handleDelete(getCustomers._id.$oid)} className="text-red-500">
+                  <Trash size={20} />
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
+
+
       </table>
 
       {/* Pagination */}
@@ -148,9 +122,8 @@ const CustomerDetailsPage = () => {
             <button
               key={index}
               onClick={() => paginate(index + 1)}
-              className={`px-3 py-2 mx-1 bg-palatteTeritary text-white rounded ${
-                index + 1 === currentPage ? "bg-opacity-80" : ""
-              }`}
+              className={`px-3 py-2 mx-1 bg-palatteTeritary text-white rounded ${index + 1 === currentPage ? "bg-opacity-80" : ""
+                }`}
             >
               {index + 1}
             </button>
