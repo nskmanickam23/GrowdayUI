@@ -9,15 +9,14 @@ const customerSelectors = {
 const getAllCustomers = createAsyncThunk(
   "get/customers",
   async () => {
-    const token = getState()?.auth.token;
+    console.log("this has been called");
     const localToken = localStorage.getItem('token');
-    console.log(localToken, "token from the reud----------------------");
     const response = await api.customers.getCutomers(localToken);
     return response;
   });
 
 const addNewCustomer = createAsyncThunk(
-  "post/customer/add",
+  "post/customers/add",
   async (customerData) => {
     const token = getState()?.auth.token;
     const localToken = localStorage.getItem('token');
@@ -27,7 +26,7 @@ const addNewCustomer = createAsyncThunk(
 );
 
 const editCustomer = createAsyncThunk(
-  "post/customer/edit",
+  "post/customers/edit",
   async (customerData) => {
     const token = getState()?.auth.token;
     const localToken = localStorage.getItem('token');

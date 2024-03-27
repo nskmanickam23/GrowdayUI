@@ -2,39 +2,55 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../services/axios/axios";
 
 const memberSelectors = {
-  fetchMember: (state) => state.members.getMember,
+  fetchMember: (state) => state.members.fetchMember,
   registerMember: (state) => state.members.registerMember,
   editMember: (state) => state.members.editMember,
 };
 
-const fetchMember = createAsyncThunk("get/members", async (param,) => {
-  // const token = thunkAPI.getState()?.auth.token;
+const fetchMember = createAsyncThunk("get/members", async (param, { getState }) => {
+  const token = getState()?.auth.token;
   const localtoken = localStorage.getItem("token");
-  const response = await api.members.fetchMember(param,localtoken);
+  const response = await api.members.fetchMember(param, localtoken);
   console.log(response, "response");
   return response;
 });
 
 const registerMember = createAsyncThunk(
   "post/member",
-   async (memberData,thunkAPI) => {
-    const token = thunkAPI.getState()?.auth.token;
-    const response = await api.members.saveMember(memberData,token);
+  async (memberData, { getState }) => {
+    const token = getState()?.auth.token;
+    const localtoken = localStorage.getItem("token");
+    const response = await api.members.saveMember(memberData, localtoken);
     return response;
-});
+  }
+);
 
 const editMember = createAsyncThunk(
   "post/member/edit",
-   async (memberData,thunkAPI) => {
-    const token = thunkAPI.getState()?.auth.token;
-    const response = await api.members.editMember(memberData,token);
+  async (memberData, { getState }) => {
+    const token = getState()?.auth.token;
+    const localtoken = localStorage.getItem("token");
+    const response = await api.members.editMember(memberData, localtoken);
     return response;
-});
+  }
+);
+
 const initialState = {
-  
+  fetchMember: {
     loading: false,
     data: [],
     error: "",
+  },
+  registerMember: {
+    loading: false,
+    data: [],
+    error: "",
+  },
+  editMember: {
+    loading: false,
+    data: [],
+    error: "",
+  },
 };
 
 const membersSlice = createSlice({
@@ -44,40 +60,40 @@ const membersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchMember.pending, (state) => {
-        state.loading = true;
-        state.error = initialState.error;
+        state.fetchMember.loading = true;
+        state.fetchMember.error = initialState.error;
       })
       .addCase(fetchMember.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.data = payload?.data;
+        state.fetchMember.loading = false;
+        state.fetchMember.data = payload?.data;
       })
       .addCase(fetchMember.rejected, (state, { error }) => {
-        state.loading = false;
-        state.error = error.message;
+        state.fetchMember.loading = false;
+        state.fetchMember.error = error.message;
       })
       .addCase(registerMember.pending, (state) => {
-        state.loading = true;
-        state.error = initialState.error;
+        state.registerMember.loading = true;
+        state.registerMember.error = initialState.error;
       })
       .addCase(registerMember.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.data = payload?.data;
+        state.registerMember.loading = false;
+        state.registerMember.data = payload?.data;
       })
       .addCase(registerMember.rejected, (state, { error }) => {
-        state.loading = false;
-        state.error = error.message;
+        state.registerMember.loading = false;
+        state.registerMember.error = error.message;
       })
       .addCase(editMember.pending, (state) => {
-        state.loading = true;
-        state.error = initialState.error;
+        state.editMember.loading = true;
+        state.editMember.error = initialState.error;
       })
       .addCase(editMember.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.data = payload?.data;
+        state.editMember.loading = false;
+        state.editMember.data = payload?.data;
       })
       .addCase(editMember.rejected, (state, { error }) => {
-        state.loading = false;
-        state.error = error.message;
+        state.editMember.loading = false;
+        state.editMember.error = error.message;
       });
   },
 });

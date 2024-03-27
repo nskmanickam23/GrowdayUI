@@ -2,7 +2,7 @@
 
 import React, { useState,useEffect } from 'react';
 import { Edit, Trash, Search } from 'lucide-react';
-import {fetchMember,registerMember,editMember} from '@/application/reducers/member-reducer';
+import {fetchMember,registerMember,editMember, memberSelectors} from '@/application/reducers/member-reducer';
 import Link from 'next/link';
 import { useDispatch,useSelector } from 'react-redux';
 
@@ -18,7 +18,23 @@ const MembersPage = ({ params }) => {
   
 
   const dispatch = useDispatch();
-  const memberState = useSelector((state) => state.member);
+  //const memberState = useSelector((state) => state.member);
+  const {
+    loading:getMemberLoading,
+    error:getMemberError,
+    data:getMemberData
+  } = useSelector(memberSelectors.fetchMember);
+  const {
+    loading:registerMemberLoading,
+    error:registerMemberError,
+    data:registerMemberData,
+  } = useSelector(memberSelectors.registerMember);
+  const {
+    loading:editMemberLoading,
+    data:editMemberData,
+    error:editMemberError,
+  } = useSelector(memberSelectors.editMember); 
+
   
   const [users, setUsers] = useState([]);
 
@@ -49,12 +65,19 @@ const MembersPage = ({ params }) => {
     // };
 
     // fetchUsers();
-     dispatch(fetchMember());
-  }, [dispatch]);
+     ;
+  }, []);
+  useEffect(() => {
+    dispatch(fetchMember());
+  }, [dispatch]); 
   
   useEffect(() => {
-    setUsers(Object.values(memberState.data));
-   }, [memberState]);
+    if(getMemberData){
+      setUsers(Object.values(getMemberData));
+      console.log(getMemberData);
+    }
+    
+  },[getMemberData]);
  
 
 
@@ -72,29 +95,30 @@ const MembersPage = ({ params }) => {
           ? editedValues.business
           : editedValues.business.split(',').map(business => business.trim())
       };
-      
+      dispatch(editMember(editingUser, editedValuesWithArrayBusiness));
+      setEditingUser(null);
       // Perform a PUT request to update the user
-      const response = await fetch(`http://localhost:3002/users/${editingUser}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editedValuesWithArrayBusiness),
-      });
+      // const response = await fetch(`http://localhost:3002/users/${editingUser}`, {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(editedValuesWithArrayBusiness),
+      // });
   
-      if (response.ok) {
-        console.log(`User with ID ${editingUser} updated successfully.`);
+      // if (response.ok) {
+      //   console.log(`User with ID ${editingUser} updated successfully.`);
   
-        // Fetch the updated list of users after editing
-        const updatedResponse = await fetch('http://localhost:3002/users');
-        const updatedData = await updatedResponse.json();
-        setUsers(updatedData);
+      //   // Fetch the updated list of users after editing
+      //   const updatedResponse = await fetch('http://localhost:3002/users');
+      //   const updatedData = await updatedResponse.json();
+      //   setUsers(updatedData);
   
-        // Reset editingUser state
-        setEditingUser(null);
-      } else {
-        console.error(`Error updating user with ID ${editingUser}`);
-      }
+      //   // Reset editingUser state
+      //   setEditingUser(null);
+      // } else {
+      //   console.error(`Error updating user with ID ${editingUser}`);
+      // }
     } catch (error) {
       console.error('Error updating user:', error);
     }
@@ -161,24 +185,26 @@ const MembersPage = ({ params }) => {
     try {
       // Perform a POST request to add a new user
       const businessArray = newMember.business.split(',').map(business => business.trim());
-      const response = await fetch('http://localhost:3002/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...newMember, business: businessArray }),
-      });
+      dispatch(registerMember({ ...newMember, business: businessArray }));
+     
+      // const response = await fetch('http://localhost:3002/users', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ ...newMember, business: businessArray }),
+      // });
 
-      if (response.ok) {
-        console.log('New member added successfully.');
+      // if (response.ok) {
+      //   console.log('New member added successfully.');
 
-        // Fetch the updated list of users after adding a new member
-        const updatedResponse = await fetch('http://localhost:3002/users');
-        const updatedData = await updatedResponse.json();
-        setUsers(updatedData);
-      } else {
-        console.error('Error adding new member.');
-      }
+      //   // Fetch the updated list of users after adding a new member
+      //   const updatedResponse = await fetch('http://localhost:3002/users');
+      //   const updatedData = await updatedResponse.json();
+      //   setUsers(updatedData);
+      // } else {
+      //   console.error('Error adding new member.');
+      // }
     } catch (error) {
       console.error('Error adding new member:', error);
     }

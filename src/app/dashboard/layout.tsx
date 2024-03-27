@@ -28,7 +28,7 @@ const Dashboard: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <>
-      <div className="flex flex-row h-screen bg-lightbg dark:bg-darkbg">
+      <div className="flex flex-row h-full bg-lightbg dark:bg-darkbg">
         <div className="hidden md:flex select-none">
           <Sidebar />
         </div>
