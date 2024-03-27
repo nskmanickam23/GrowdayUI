@@ -22,8 +22,6 @@ const profile = {
   businesses: [{ name: "ABC Company" }, { name: "XYZ Corporation" }],
 };
 
-import { UserData } from "@/utils/types/userTypes";
-import Link from "next/link";
 
 const Page = () => {
   const dispatch = useDispatch();
