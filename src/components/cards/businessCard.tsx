@@ -33,6 +33,11 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
     setMenuOpen(!menuOpen); // Toggle menu visibility
   };
 
+  const setIdInLocalStorage = (id: any) => {
+    localStorage.setItem('businessID', id);
+  };
+
+
   const handleChangeStatus = (newStatus: boolean) => {
     const newData = {
       name: name,
@@ -46,12 +51,12 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
   };
 
   return (
-    <a href={`/${name}`} target="_blank" rel="noopener noreferrer" className="group mr-5 transform transition-transform duration-300 ease-in-out hover:scale-105">
-      <div className="relative">
-        <div className="py-3 px-2 h-32 bg-palatteFour dark:bg-darkbg dark:border dark:border-darkborder rounded-xl flex flex-col shadow-[rgba(0,_0,_0,_0.03)_0px_0px_16px]">
-          <div className="flex p-4 flex-col pb-[18px] relative select-none">
+    <a href={`/${name}`} onClick={() => setIdInLocalStorage(id)} target="_blank" rel="noopener noreferrer" className="group mr-5 transform transition-transform duration-300 ease-in-out hover:scale-105">
+      <div className="relative transform transition-transform duration-300 ease-in-out hover:scale-110  text-[12px]">
+        <div className="py-3 px-2 h-24 bg-palatteFour dark:bg-darkbg dark:border dark:border-darkborder rounded-xl flex flex-col shadow-[rgba(0,_0,_0,_0.03)_0px_0px_16px]">
+          <div className="flex p-4 flex-col items-center justify-center pb-[18px] relative select-none">
+            <h2 className="font-bold mt-4">{name.toUpperCase()}</h2>
             <div>
-              <h2 className="font-bold">{name}</h2>
               <div className="absolute top-0 right-1 px-[1px]">
                 <div className="flex flex-row items-center justify-center gap-3">
 
@@ -78,10 +83,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
                 </div>
               </div>
             </div>
-            <div className="text-center mt-[5%] py-1 bg-gray-100 rounded-full  transform transition-transform duration-300 ease-in-out hover:scale-110  text-[12px]">
-              <span className='text-[13px]  font-bold  pl-3 '> Domain : </span>
-              {domain_url}
-            </div>
+
           </div>
         </div>
       </div>

@@ -41,7 +41,7 @@ const Page = () => {
 
 
   //change to this token if we need to avoid logging in on each refresh
-  //use token if we want to change it according to the state
+  //use token if we want to change it according to the
   const tokenLocal = localStorage.getItem("token")
 
   useEffect(() => {

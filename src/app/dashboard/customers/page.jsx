@@ -1,15 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Edit, Trash } from "lucide-react"; // Make sure to import these icons
-import {
-  fetchCustomers,
-  deleteCustomer,
-  Customer,
-} from "@/utils/api/customerAPI";
+import { DiscAlbum, Edit, Trash } from "lucide-react"; // Make sure to import these icons
 
 import {
   addNewCustomer,
   getAllCustomers,
+  customerSelectors
 } from "@/application/reducers/customer-reducer";
 import { useDispatch, useSelector } from "react-redux";
 import AddCustomerPopup from "@/components/popups/AddCustomerPopup";
@@ -27,10 +23,8 @@ import AddCustomerPopup from "@/components/popups/AddCustomerPopup";
 
 const CustomerDetailsPage = () => {
   const dispatch = useDispatch();
-
-  const customerState = useSelector((state) => state.customer);
+  const { data: getCustomers, loading: getCustomersLoading, error: getCustomersError } = useSelector(customerSelectors.getAllCustomers);
   const [customers, setCustomers] = useState([]);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [editingCustomer, setEditingCustomer] = useState(null);
@@ -42,13 +36,12 @@ const CustomerDetailsPage = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const [isAddCustomerPopupOpen, setAddCustomerPopupOpen] = useState(false);
 
+  
   useEffect(() => {
-    dispatch(getAllCustomers());
-  }, [dispatch]);
+    dispatch(getAllCustomers())
+  },[dispatch])
 
-  useEffect(() => {
-    setCustomers(Object.values(customerState.data));
-  }, [customerState]);
+  console.log(getCustomers,"data--");
 
   const handleEdit = (customerId) => {
     setEditingCustomer(customerId);

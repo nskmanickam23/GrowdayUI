@@ -10,6 +10,14 @@ import { useEffect } from "react";
 export default function Home() {
   const router = useRouter();
 
+  const tokenLocal = localStorage.getItem("token")
+
+  useEffect(() => {
+    if (tokenLocal) {
+      router.replace('/dashboard');
+    }
+  }, [tokenLocal, router]);
+
   // useEffect(() => {
   //   const token = localStorage.getItem("token");
   //   if (!token) {

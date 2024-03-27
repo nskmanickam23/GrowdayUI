@@ -3,20 +3,25 @@ import api from "../services/axios/axios";
 
 const customerSelectors = {
   getAllCustomers: (state) => state.customers.getAllCustomers,
+  addNewCustomer: (state) => state.customers.addNewCustomer
 };
 
-const getAllCustomers = createAsyncThunk("get/customers", async (param) => {
-  const token = getState()?.auth.token;
-  const response = await api.customers.getCutomers(param, token);
-  console.log(response, "response----------------------");
-  return response;
-});
+const getAllCustomers = createAsyncThunk(
+  "get/customers",
+  async () => {
+    const token = getState()?.auth.token;
+    const localToken = localStorage.getItem('token');
+    console.log(localToken, "token from the reud----------------------");
+    const response = await api.customers.getCutomers(localToken);
+    return response;
+  });
 
 const addNewCustomer = createAsyncThunk(
   "post/customer/add",
   async (customerData) => {
     const token = getState()?.auth.token;
-    const response = await api.customers.saveCusomer(customerData, token);
+    const localToken = localStorage.getItem('token');
+    const response = await api.customers.saveCusomer(customerData, localToken);
     return response;
   }
 );
@@ -25,15 +30,23 @@ const editCustomer = createAsyncThunk(
   "post/customer/edit",
   async (customerData) => {
     const token = getState()?.auth.token;
-    const response = await api.customers.editCustomer(customerData, token);
+    const localToken = localStorage.getItem('token');
+    const response = await api.customers.editCustomer(customerData, localToken);
     return response;
   }
 );
 
 const initialState = {
-  loading: false,
-  data: {},
-  error: "",
+  getAllCustomers: {
+    loading: false,
+    data: {},
+    error: "",
+  },
+  addNewCustomer: {
+    loading: false,
+    data: {},
+    error: "",
+  }
 };
 
 const customersSlice = createSlice({
@@ -43,41 +56,29 @@ const customersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getAllCustomers.pending, (state) => {
-        state.loading = true;
-        state.error = initialState.error;
+        state.getAllCustomers.loading = true;
+        state.getAllCustomers.error = initialState.error;
       })
       .addCase(getAllCustomers.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.data = payload?.data;
+        state.getAllCustomers.loading = false;
+        state.getAllCustomers.data = payload?.data;
       })
       .addCase(getAllCustomers.rejected, (state, { error }) => {
-        state.loading = false;
-        state.error = error.message;
+        state.getAllCustomers.loading = false;
+        state.getAllCustomers.error = error.message;
       })
       .addCase(addNewCustomer.pending, (state) => {
-        state.loading = true;
-        state.error = initialState.error;
+        state.addNewCustomer.loading = true;
+        state.addNewCustomer.error = initialState.error;
       })
       .addCase(addNewCustomer.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.data = payload?.data;
+        state.addNewCustomer.loading = false;
+        state.addNewCustomer.data = payload?.data;
       })
       .addCase(addNewCustomer.rejected, (state, { error }) => {
-        state.loading = false;
-        state.error = error.message;
+        state.addNewCustomer.loading = false;
+        state.addNewCustomer.error = error.message;
       })
-      .addCase(editCustomer.pending, (state) => {
-        state.loading = true;
-        state.error = initialState.error;
-      })
-      .addCase(editCustomer.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.data = payload?.data;
-      })
-      .addCase(editCustomer.rejected, (state, { error }) => {
-        state.loading = false;
-        state.error = error.message;
-      });
   },
 });
 

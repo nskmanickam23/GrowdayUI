@@ -1,40 +1,37 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import Link from "next/link";
-
 import BusinessCard from "@/components/cards/businessCard";
 import AllBusinessLoader from "@/components/loaders/AllBusinessLoader";
 import AddBusinessPopup from "@/components/popups/AddBusinessPopup";
-
 import { ChevronDown, Filter, Search } from "lucide-react";
 import {
+  businessSelectors,
   getBusinesses,
   saveBusiness,
 } from "@/application/reducers/business-reducer";
-
 import { Business, BusinessPageProps } from "@/utils/types/businessTypes";
 
 const BusinessPage = ({ businesses }) => {
   const dispatch = useDispatch();
-  const businessesState = useSelector((state) => state.business);
+  const { data: getBusinessData, loading: getBusinessLoading, error: getBusinessError } = useSelector(businessSelectors.getBusinesses);
+  const { loading: getAddBusinessLoading } = useSelector(businessSelectors.saveBusiness)
   const [loadedBusinesses, setLoadedBusinesses] = useState([]);
   const [isAddBusinessPopupOpen, setAddBusinessPopupOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterActive, setFilterActive] = useState(null);
   const [isFilterDropdownOpen, setFilterDropdownOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     dispatch(getBusinesses());
   }, [dispatch]);
 
   useEffect(() => {
-    setLoadedBusinesses(Object.values(businessesState.data));
-
-    setLoading(businessesState.loading);
-  }, [businessesState]);
+    if (getBusinessData) {
+      setLoadedBusinesses(Object.values(getBusinessData));
+    }
+  }, [getBusinessData]);
 
   const handleAddBusinessClick = () => {
     setAddBusinessPopupOpen(true);
@@ -45,8 +42,10 @@ const BusinessPage = ({ businesses }) => {
   };
 
   const handleAddBusinessSave = (newBusiness) => {
+    console.log(newBusiness, "busiense---new");
     dispatch(saveBusiness(newBusiness));
     dispatch(getBusinesses());
+    setLoadedBusinesses(Object.values(getBusinessData));
     handleAddBusinessClose();
   };
 
@@ -54,23 +53,23 @@ const BusinessPage = ({ businesses }) => {
     setSearchTerm(event.target.value);
   };
 
-  // Handle filter change (Active/Inactive/All)
   const handleFilterChange = (isActive) => {
     setFilterActive(isActive);
-    setFilterDropdownOpen(false); // Close the dropdown after selecting an option
+    setFilterDropdownOpen(false);
   };
 
   const handleActivateDeactivate = () => {
     dispatch(getBusinesses());
   };
 
-  const filteredBusinesses = loadedBusinesses.filter((businessesState) => {
-    const name = businessesState.name || ""; // Ensure name is defined
+  const filteredBusinesses = loadedBusinesses.filter((business) => {
+    const name = business.name || "";
     const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter =
-      filterActive === null || businessesState?.isActive === filterActive;
+      filterActive === null || business.isActive === filterActive;
     return matchesSearch && matchesFilter;
   });
+
 
   return (
     <div className="">
@@ -100,8 +99,8 @@ const BusinessPage = ({ businesses }) => {
               {filterActive === true
                 ? "Active"
                 : filterActive === false
-                ? "Inactive"
-                : "All"}
+                  ? "Inactive"
+                  : "All"}
             </button>
             {isFilterDropdownOpen && (
               <div className="absolute  bg-white border rounded-md shadow-md mt-1">
@@ -137,7 +136,7 @@ const BusinessPage = ({ businesses }) => {
           </h1>
         </div>
         <div className="self-center md:self-end my-5 ml-auto">
-          {loading ? (
+          {getBusinessLoading || getAddBusinessLoading ? (
             <div>
               {/* Display loader */}
               {/* <AllBusinessLoader /> */}
@@ -154,30 +153,30 @@ const BusinessPage = ({ businesses }) => {
           )}
         </div>
       </div>
-      {loading ? (
+      {getBusinessLoading || getAddBusinessLoading ? (
         <div>
           {/* Display loader */}
           <AllBusinessLoader />
         </div>
       ) : (
         <div>
-          {!loading && filteredBusinesses.length > 0 ? (
+          {!getBusinessLoading && filteredBusinesses.length > 0 ? (
             <div className="grid gap-7 grid-cols-1 md:grid-cols-3 px-5 pb-10 ml-5">
-                {filteredBusinesses.map((business, index) => (
-                  <div key={business.id || index}>
-                    <BusinessCard
-                      id={business._id?.$oid || ''}
-                      name={business.name || ''}
-                      description={business.description || ''}
-                      domain_url={business.business_url || ''}
-                      link={`/dashboard/business/${business._id?.$oid || ''}`}
-                      status={business?.status}
-                      address={business?.address}
-                      onStatusToggle={() => handleActivateDeactivate()} // Pass onStatusToggle function
-                    />
+              {filteredBusinesses.map((business, index) => (
+                <div key={index}>
+                  <BusinessCard
+                    id={business._id.$oid}
+                    name={business.name}
+                    description={business.description}
+                    domain_url={business.business_url}
+                    link={`/dashboard/business/${business._id.$oid}`}
+                    status={business.status}
+                    address={business.address}
+                    onStatusToggle={handleActivateDeactivate}
+                  />
+                </div>
 
-                  </div>
-                ))}
+              ))}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center mt-[10%] m-5 p-20 border-dotted rounded-md border-lightborder dark:border-darkborder border-[4px]">
@@ -194,7 +193,6 @@ const BusinessPage = ({ businesses }) => {
           )}
         </div>
       )}
-      {/* New Business Popup */}
       <AddBusinessPopup
         isOpen={isAddBusinessPopupOpen}
         onClose={handleAddBusinessClose}

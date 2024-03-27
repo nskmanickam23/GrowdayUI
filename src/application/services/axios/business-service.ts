@@ -29,7 +29,15 @@ const businessService = {
       headers: {
         token: `Bearer ${token}`,
       },
-    })
+    }),
+  
+  getBusinessByID: (businessId: string, token: string) =>
+    axios.get(`${baseURL}/business/${businessId}`, {
+      headers: {
+        token: `Bearer ${token}`,
+      },
+    }),
+  
 };
 
 export default businessService;

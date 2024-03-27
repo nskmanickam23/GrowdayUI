@@ -93,7 +93,7 @@ const EditProfilePage = () => {
             <div className="flex  mx-auto ">
                 <div className="w-1/3" >
                     <h2 className="text-2xl font-bold mb-4  ">Password</h2>
-                    <p className="text-gray-600 text-sm mb-4">For security reasons, it's recommended to reset your password regularly. You can reset your password by clicking on the "Change your password".</p>
+                    <p className="text-gray-600 text-sm mb-4">For security reasons, its&apos;s recommended to reset your password regularly. You can reset your password by clicking on the "Change your password".</p>
                 </div>
                 <div className="w-2/3">
                     <form onSubmit={handleSubmit}>
