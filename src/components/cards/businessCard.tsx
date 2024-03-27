@@ -1,6 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { acitvateAndDeactivateBusiness } from '@/application/reducers/business-reducer';
 import Link from 'next/link';
 import { PencilIcon } from 'lucide-react';
 
@@ -25,7 +23,6 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
   address,
   onStatusToggle,
 }) => {
-  const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -45,7 +42,6 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
       status: newStatus, // Set the new status
     };
 
-    dispatch(acitvateAndDeactivateBusiness(newData));
     setMenuOpen(false); // Close the menu after changing status
     onStatusToggle(); // Trigger the onStatusToggle function
   };
