@@ -25,8 +25,9 @@ const EditPage = () => {
   let id = params.id.toString();
 
   useEffect(() => {
-    dispatch(fetchBusinessById(id))
-  }, [dispatch]);
+    dispatch(fetchBusinessById(id));
+  }, [dispatch, id]);
+
 
   useEffect(() => {
     if (getBusiness) {

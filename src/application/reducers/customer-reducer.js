@@ -18,9 +18,8 @@ const getAllCustomers = createAsyncThunk(
 const addNewCustomer = createAsyncThunk(
   "post/customers/add",
   async (customerData) => {
-    const token = getState()?.auth.token;
-    const localToken = localStorage.getItem('token');
-    const response = await api.customers.saveCusomer(customerData, localToken);
+    console.log(customerData,"----");
+    const response = await api.customers.saveCusomer(customerData);
     return response;
   }
 );

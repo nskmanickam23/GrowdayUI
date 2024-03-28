@@ -4,11 +4,7 @@ const baseURL = "https://growday.onrender.com";
 
 const customerService = {
   saveCusomer: (param: any, token: string) =>
-    axios.post(`${baseURL}/customer/register`, param, {
-      headers: {
-        token: `Bearer ${token}`,
-      },
-    }),
+    axios.post(`${baseURL}/customer/register`, param),
 
   getCutomers: (token: string) =>
     axios.get(`${baseURL}/<collection_name>/list?collection_name=customers`, {

@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/login/page.jsx", "src/application/reducers/auth-reducer.js", "src/application/reducers/reducer.js", "src/application/store/store.js", "src/app/signup/page.jsx", "src/components/Forms/Auth/OtpVerificatonForm.jsx", "src/application/services/api.js", "src/app/dashboard/business/[...id]/page.jsx", "src/app/dashboard/settings/page.jsx", "src/app/dashboard/business/page.jsx", "src/components/Sidebar/Sidebar.jsx", "src/app/dashboard/customers/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/login/page.jsx", "src/application/reducers/auth-reducer.js", "src/application/reducers/reducer.js", "src/application/store/store.js", "src/app/signup/page.jsx", "src/components/Forms/Auth/OtpVerificatonForm.jsx", "src/application/services/api.js", "src/app/dashboard/business/[...id]/page.jsx", "src/app/dashboard/settings/page.jsx", "src/app/dashboard/business/page.jsx", "src/components/Sidebar/Sidebar.jsx", "src/app/dashboard/customers/page.jsx", "src/app/[...slug]/page.jsx", "src/app/signup/verifyemail/page.jsx", "src/app/page.jsx"],
   "exclude": ["node_modules"]
 }

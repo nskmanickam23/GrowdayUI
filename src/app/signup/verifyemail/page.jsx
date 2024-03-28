@@ -10,9 +10,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
-
   const router = useRouter();
-  
+
   const {
     loading: isRegisterLoading,
     data: registerData,
@@ -23,17 +22,20 @@ const Page = () => {
     if (!isRegisterLoading && registerData.message) {
       toast.success(`${registerData.message}`);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRegisterError]);
 
-
-  const tokenLocal = localStorage.getItem("token")
+  // const tokenLocal = localStorage.getItem("token")
 
   useEffect(() => {
+    const tokenLocal =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem("token")
+        : null;
     if (tokenLocal) {
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     }
-  }, [tokenLocal, router]);
+  }, [router]);
 
   return (
     <section className="bg-lightbg dark:bg-darkbg h-screen">

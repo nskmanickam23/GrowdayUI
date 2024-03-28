@@ -2,12 +2,13 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../services/axios/axios";
 
 const userSelectors = {
-  getUser: (state) => state.users.getUser,
+  getUser: (state) => state.user.getUser,
 };
 
-const getUser = createAsyncThunk("get/user", async (param) => {
-  const token = getState()?.auth.token;
-  const response = await api.user.getUser(param, token);
+const getUser = createAsyncThunk("get/user", async () => {
+  const localToken = localStorage.getItem('token');
+  console.log(localToken, "response for get user------");
+  const response = await api.user.getUser(localToken);
   console.log(response, "response for get user------");
   return response;
 });
@@ -19,9 +20,17 @@ const editUser = createAsyncThunk("post/user/edit", async (userData) => {
 });
 
 const initialState = {
-  loading: false,
-  data: {},
-  error: "",
+  getUser: {
+    loading: false,
+    data: {},
+    error: "",
+  },
+  editUser: {
+    loading: false,
+    data: {},
+    error: "",
+  }
+
 };
 
 const userSlice = createSlice({
@@ -31,29 +40,30 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getUser.pending, (state) => {
-        state.loading = true;
-        state.error = "";
+        state.getUser.loading = true;
+        state.getUser.error = "";
       })
       .addCase(getUser.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.data = payload?.data;
+        state.getUser.loading = false;
+        state.getUser.data = payload?.data;
       })
       .addCase(getUser.rejected, (state, { error }) => {
-        state.loading = false;
-        state.error = error.message; // Set error message on rejection
+        state.getUser.loading = false;
+        state.getUser.error = error.message; // Set error message on rejection
       })
       .addCase(editUser.pending, (state) => {
-        state.loading = true;
-        state.error = ""; // Clear error on pending
+        state.editUser.loading = true;
+        state.editUser.error = "";
       })
       .addCase(editUser.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.data = payload?.data; // Set user data from the payload
+        state.editUser.loading = false;
+        state.editUser.data = payload?.data;
       })
       .addCase(editUser.rejected, (state, { error }) => {
-        state.loading = false;
-        state.error = error.message; // Set error message on rejection
-      });
+        state.editUser.loading = false;
+        state.editUser.error = error.message; // Set error message on rejection
+      })
+
   },
 });
 

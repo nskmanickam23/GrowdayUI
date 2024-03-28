@@ -52,7 +52,8 @@ export const authSlice = createSlice({
     },
     clearToken: (state) => {
       state.token = null;
-      localStorage.removeItem("token");
+      window !== "undefined" ? window.localStorage.removeItem("token") : null;
+      // localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
@@ -65,7 +66,11 @@ export const authSlice = createSlice({
         state.login.loading = false;
         state.login.data = payload?.data;
         state.token = payload?.data?.access_token;
-        localStorage.setItem("token", payload?.data?.access_token);
+        window !== "undefined"
+          ? window.localStorage.setItem("token", payload?.data?.access_token)
+          : null;
+
+        // localStorage.setItem("token", payload?.data?.access_token);
       })
       .addCase(saveLogin.rejected, (state, { error }) => {
         state.login.loading = false;
