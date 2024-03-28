@@ -1,12 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import React, { useState } from "react";
 import { ChangeEvent } from "react";
 import Image from "next/image";
-import { Search } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-// import { selectIsUserLoggedIn } from '@/ReduxStore/store/Store';
-import ProfileMenu from "./profilemenu";
 import icon from "../../../../public/icon.svg";
 import MobileDialog from "./mobileDialog";
 import ThemeSwitcher from "./ThemeSwitcher";
@@ -18,7 +14,6 @@ import {
 import { RiArrowLeftDoubleFill } from "react-icons/ri";
 
 const Navbar = () => {
-  // const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
   // Search
   const dispatch = useDispatch();
   const { updateSideBar } = commonActions;

@@ -3,7 +3,7 @@ import axios from "axios";
 const baseURL = "https://growday.onrender.com";
 
 const userService = {
-  getUser: (param: any, token: string) =>
+  getUser: ( token: string) =>
     axios.get(`${baseURL}/user/info`, {
       headers: {
         token: `Bearer ${token}`,

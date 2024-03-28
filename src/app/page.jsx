@@ -10,13 +10,17 @@ import { useEffect } from "react";
 export default function Home() {
   const router = useRouter();
 
-  const tokenLocal = localStorage.getItem("token")
+  // const tokenLocal = localStorage.getItem("token");
 
   useEffect(() => {
+    const tokenLocal =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem("token")
+        : null;
     if (tokenLocal) {
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     }
-  }, [tokenLocal, router]);
+  }, [router]);
 
   // useEffect(() => {
   //   const token = localStorage.getItem("token");

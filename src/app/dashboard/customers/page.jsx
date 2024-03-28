@@ -9,8 +9,12 @@ import {
 } from "@/application/reducers/customer-reducer";
 import { useDispatch, useSelector } from "react-redux";
 import AddCustomerPopup from "@/components/popups/AddCustomerPopup";
+import Loader from "@/components/loaders/Loader"; // Import loader component
 
-
+import {
+  businessSelectors,
+  getBusinesses,
+} from "@/application/reducers/business-reducer";
 
 const CustomerDetailsPage = () => {
   const dispatch = useDispatch();
@@ -20,20 +24,28 @@ const CustomerDetailsPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [editingCustomer, setEditingCustomer] = useState(null);
 
+
+
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const [isAddCustomerPopupOpen, setAddCustomerPopupOpen] = useState(false);
+
+  const { data: getBusinessData, loading: getBusinessLoading, error: getBusinessError } = useSelector(businessSelectors.getBusinesses);
 
 
   useEffect(() => {
     console.log("dispacting det all customers");
     dispatch(getAllCustomers())
+    dispatch(getBusinesses());
   }, [dispatch])
 
-  console.log(getCustomers, "data--");
 
+  console.log(getCustomers, "data--");
+  console.log(getBusinessData, "business---");
+  
   useEffect(() => {
     setCustomers(getCustomers);
-  }, [setCustomers])
+  }, [getCustomers, setCustomers]);
+
 
   console.log(customers, "data--");
 
@@ -59,6 +71,7 @@ const CustomerDetailsPage = () => {
   const handleAddCustomerSave = async (newCustomer) => {
     dispatch(addNewCustomer(newCustomer));
     handleAddCustomerClose();
+    console.log(newCustomer, "new customer here");
     dispatch(getAllCustomers());
   };
 
@@ -82,37 +95,48 @@ const CustomerDetailsPage = () => {
         </div>
       </div>
 
-      <table className="w-full">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left py-2">Customer Name</th>
-            <th className="text-left py-2">Email</th>
-            <th className="text-left py-2">Created Date</th>
-            <th className="text-left py-2">Phone</th>
-            <th className="text-left py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.isArray(getCustomers) && getCustomers.map((getCustomers) => (
-            <tr key={getCustomers._id.$oid} className="border-b">
-              <td className="text-left py-2">{getCustomers.name}</td>
-              <td className="text-left py-2">{getCustomers.email}</td>
-              <td className="text-left py-2">{new Date(getCustomers.created_at.$date).toLocaleDateString()}</td>
-              <td className="text-left py-2">{getCustomers.phone}</td>
-              <td className="text-left py-2">
-                <button onClick={() => handleEdit(getCustomers._id.$oid)} className="text-blue-500 mr-2">
-                  <Edit size={20} />
-                </button>
-                <button onClick={() => handleDelete(getCustomers._id.$oid)} className="text-red-500">
-                  <Trash size={20} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+      {getCustomersLoading || getBusinessLoading ? (
+        <div>
+          {/* Display loader */}
+          <Loader />
+        </div>
+      ) : (
+        <div>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-2">Customer Name</th>
+                <th className="text-left py-2">Email</th>
+                <th className="text-left py-2">Created Date</th>
+                <th className="text-left py-2">Phone</th>
+                <th className="text-left py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.isArray(getCustomers) && getCustomers.map((getCustomers) => (
+                <tr key={getCustomers._id.$oid} className="border-b">
+                  <td className="text-left py-2">{getCustomers.name}</td>
+                  <td className="text-left py-2">{getCustomers.email}</td>
+                  <td className="text-left py-2">{new Date(getCustomers.created_at.$date).toLocaleDateString()}</td>
+                  <td className="text-left py-2">{getCustomers.phone}</td>
+                  <td className="text-left py-2">
+                    <button onClick={() => handleEdit(getCustomers._id.$oid)} className="text-blue-500 mr-2">
+                      <Edit size={20} />
+                    </button>
+                    <button onClick={() => handleDelete(getCustomers._id.$oid)} className="text-red-500">
+                      <Trash size={20} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
 
 
-      </table>
+          </table>
+
+        </div>
+      )}
+
 
       {/* Pagination */}
       <div className="flex justify-center items-center mt-4">
@@ -135,7 +159,9 @@ const CustomerDetailsPage = () => {
         isOpen={isAddCustomerPopupOpen}
         onClose={handleAddCustomerClose}
         onSave={handleAddCustomerSave}
+        businesses={getBusinessData} // Pass businesses data
       />
+
     </div>
   );
 };

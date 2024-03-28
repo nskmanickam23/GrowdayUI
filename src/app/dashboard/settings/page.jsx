@@ -6,12 +6,16 @@ import {
   Calendar,
   PhoneIcon,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { getActivityIcon } from "@/components/ui/ActivityLog";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getUser } from "@/application/reducers/user-reducer";
+import {
+  getUser, 
+  userSelectors
+} from "@/application/reducers/user-reducer";
+
 
 const profile = {
   name: "Charlotte Bell",
@@ -25,18 +29,14 @@ const profile = {
 
 const Page = () => {
   const dispatch = useDispatch();
-  const userState = useSelector((state) => state.user); // Access user state from Redux
-  const [userData, setUserData] = useState([]);
+  const { data:getUserData, loading:getUserLoading, error:getUserError}=useSelector(userSelectors.getUser)
 
   useEffect(() => {
+    console.log("callig ");
     dispatch(getUser());
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log(userData, "user ------data");
-    setUserData(userState.data);
-    console.log(userState.data, "user data-------");
-  }, [userData, userState]);
+console.log(getUserData,"user data here---");
 
   const [activeTab, setActiveTab] = useState("Activity"); // State to manage active tab
   const [mounted, setMounted] = useState(false); // State to track component mounting
@@ -171,12 +171,12 @@ const Page = () => {
           <div className="p-[1%] m-[1%] w-20 h-20 bg-orange-400 rounded-full ring-4 shadow-xl ring-white dark:ring-gray-500 relative">
             {/* Profile image */}
             <div className="absolute inset-0 flex items-center justify-center text-white text-3xl font-bold">
-              {userData?.name?.charAt(0)}
+              {getUserData?.name?.charAt(0)}
             </div>
           </div>
           <div className="flex flex-col px-4">
             <div className="flex flex-row text-xl justify-center md:justify-start font-black">
-              <div>{userData.name}</div>
+              <div>{getUserData.name}</div>
 
               {/* make the data for active profile or not later */}
               <div className="px-5 md:flex flex-row items-center">
@@ -189,10 +189,10 @@ const Page = () => {
             <div className="flex  font-thin  flex-col">
               {/* <Calendar className="text-gray-500  w-5 h-5 mx-4" /> Joined on{" "} */}
              <div className="text-xs text-darkborder">
-              Joined on {formatDate(userData.created_at)}
+                Joined on {formatDate(getUserData.created_at)}
              </div>
               <div className="flex text-xs  text-darkborder flex-row font-thin ">
-              {userData.email}
+                {getUserData.email}
               </div>
             </div>
             {/* <div className="flex flex-row text-gray-400">

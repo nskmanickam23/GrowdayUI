@@ -6,13 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Eye, EyeOff } from "lucide-react";
-import {
-  useRegisterValidate,
-  RegisterFormData,
-} from "../../utils/formValidations/user/register";
-import { RegisterFn } from "../../utils/api/methods/post";
-import FormError from "../../components/Error/Formerror/FormError";
-import { ErrorComponent } from "../../components/Error/ErrorComponent/ErrorComponent";
+import { useRegisterValidate } from "../../utils/formValidations/user/register";
 import logoImg from "../../../public/logo.svg";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
@@ -22,7 +16,7 @@ import {
   authSelectors,
   saveRegister,
 } from "@/application/reducers/auth-reducer";
-import AllBusinessLoader from "@/components/loaders/AllBusinessLoader";
+import AllBusinessLoader from "@/components/loaders/Loader";
 
 const Page = () => {
   const router = useRouter();
@@ -67,14 +61,17 @@ const Page = () => {
     }));
   };
 
-  const tokenLocal = localStorage.getItem("token")
+  // const tokenLocal = localStorage.getItem("token")
 
   useEffect(() => {
+    const tokenLocal =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem("token")
+        : null;
     if (tokenLocal) {
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     }
-  }, [tokenLocal, router]);
-
+  }, [router]);
 
   useEffect(() => {
     if (
@@ -84,7 +81,7 @@ const Page = () => {
     ) {
       router.push("/signup/verifyemail");
     }
-  }, [isRegisterLoading, isRegisterError, registerData]);
+  }, [formSubmitted, isRegisterLoading, registerData, router]);
 
   // const formSubmit = async (Data) => {
   //   try {
@@ -127,7 +124,7 @@ const Page = () => {
     if (!isRegisterLoading && isRegisterError) {
       toast.error(`${isRegisterError}`);
     }
-  }, [isRegisterError]);
+  }, [isRegisterError, isRegisterLoading]);
 
   return (
     <section className="bg-lightbg dark:bg-darkbg h-screen">

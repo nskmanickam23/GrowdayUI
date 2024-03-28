@@ -4,20 +4,23 @@ interface AddCustomerPopupProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (newCustomer: any) => void;
+    businesses: any[]; // Add businesses prop
 }
 
-const AddCustomerPopup: React.FC<AddCustomerPopupProps> = ({ isOpen, onClose, onSave }) => {
+const AddCustomerPopup: React.FC<AddCustomerPopupProps> = ({ isOpen, onClose, onSave, businesses }) => {
     const [newCustomer, setNewCustomer] = useState({
         name: '',
         email: '',
         password: '',
         phone: '',
-        business_ids: [],
+        business_ids: '', // Specify the type explicitly as string
         created_at: new Date().toISOString(),
     });
 
     const handleSave = () => {
-        onSave(newCustomer);
+        // Convert business_ids to string if it's an array
+        const businessIdsAsString = Array.isArray(newCustomer.business_ids) ? newCustomer.business_ids.join(', ') : newCustomer.business_ids;
+        onSave({ ...newCustomer, business_ids: businessIdsAsString });
         onClose();
     };
 
@@ -44,15 +47,6 @@ const AddCustomerPopup: React.FC<AddCustomerPopupProps> = ({ isOpen, onClose, on
                     />
                 </label>
                 <label className="block mb-2">
-                    Password:
-                    <input
-                        type="password"
-                        value={newCustomer.password}
-                        onChange={(e) => setNewCustomer({ ...newCustomer, password: e.target.value })}
-                        className="border p-2 rounded w-full"
-                    />
-                </label>
-                <label className="block mb-2">
                     Phone:
                     <input
                         type="text"
@@ -60,6 +54,19 @@ const AddCustomerPopup: React.FC<AddCustomerPopupProps> = ({ isOpen, onClose, on
                         onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
                         className="border p-2 rounded w-full"
                     />
+                </label>
+                <label className="block mb-2">
+                    Business:
+                    <select
+                        value={newCustomer.business_ids}
+                        onChange={(e) => setNewCustomer({ ...newCustomer, business_ids: e.target.value })}
+                        className="border p-2 rounded w-full"
+                    >
+                        <option value="">Select Business</option>
+                        {Array.isArray(businesses) && businesses.map(business => (
+                            <option key={business._id.$oid} value={business._id.$oid}>{business.name}</option>
+                        ))}
+                    </select>
                 </label>
                 <div className="flex justify-end">
                     <button className="bg-blue-500 text-white px-4 py-2 rounded mr-2" onClick={handleSave}>

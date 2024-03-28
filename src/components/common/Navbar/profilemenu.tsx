@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { clearUser } from "@/ReduxStore/slices/userSlice";
 
 // import { selectIsUserLoggedIn } from "@/ReduxStore/store/Store";
 
@@ -19,9 +18,7 @@ const ProfileMenu = () => {
 
   const dispatch = useDispatch();
   const handleLogout = () => {
-    // Clear user data from the store and perform any other necessary actions (e.g., redirect to the login page)
-    dispatch(clearUser());
-    // Additional logout logic...
+
   };
   return (
     <div

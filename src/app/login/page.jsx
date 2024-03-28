@@ -4,24 +4,17 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "@/ReduxStore/slices/userSlice"; // redux
-import { addtoken } from "@/ReduxStore/slices/tokenSlice"; // redux
 import FormError from "../../components/Error/Formerror/FormError"; //error componet
 import { ErrorComponent } from "../../components/Error/ErrorComponent/ErrorComponent"; //error componet
-import { LoginFn } from "../../utils/api/methods/post"; //axios post method
-import {
-  useValidate,
-  LoginFormData,
-} from "../../utils/formValidations/user/login"; //validation
+import { useValidate } from "../../utils/formValidations/user/login"; //validation
 import { Routes, LoginPageContents } from "@/utils/enums/constants";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa";
 import { IoLogoMicrosoft } from "react-icons/io5";
-import icon from "../../../public/icon.svg";
 import logoImg from "../../../public/logo.svg";
 import Image from "next/image";
 import { authSelectors, saveLogin } from "@/application/reducers/auth-reducer";
-import AllBusinessLoader from "@/components/loaders/AllBusinessLoader";
+import AllBusinessLoader from "@/components/loaders/Loader";
 // import { authSelectors, saveLogin } from "@/application/reducers/auth-reducer";
 
 const Page = () => {
@@ -29,8 +22,8 @@ const Page = () => {
   const dispatch = useDispatch();
   const { errors, handleSubmit, register } = useValidate();
   const [errorrMessage, setErrorMessage] = useState("");
-  const token = useSelector(authSelectors.authToken)
-  const {loading : loginLoading} = useSelector(authSelectors.loginCall)
+  const token = useSelector(authSelectors.authToken);
+  const { loading: loginLoading } = useSelector(authSelectors.loginCall);
   // show  or hide password handler
   const [showPassword, setShowPassword] = useState(false);
   const handleTogglePassword = () => {
@@ -38,19 +31,19 @@ const Page = () => {
   };
   const [loading, setLoading] = useState(false);
 
-
-
   //change to this token if we need to avoid logging in on each refresh
   //use token if we want to change it according to the
-  const tokenLocal = localStorage.getItem("token")
+  // const tokenLocal = localStorage.getItem("token")
 
   useEffect(() => {
+    const tokenLocal =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem("token")
+        : null;
     if (tokenLocal) {
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     }
-  }, [tokenLocal, router]);
-
-
+  }, [router]);
 
   // form submit
   // const formSubmit = async (Data: LoginFormData) => {
@@ -73,15 +66,16 @@ const Page = () => {
   //         setLoading(false); // Set loading back to false after API response is received
   //     }
   // };
-  
 
   useEffect(() => {
-    if (token) {
-      router.push('/dashboard');
+    const tokenLocal =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem("token")
+        : null;
+    if (tokenLocal) {
+      router.replace("/dashboard");
     }
-  }, [token])
-  
-
+  }, [router]);
 
   // Color code from palette (left to right)
   // #2a3950
@@ -108,7 +102,7 @@ const Page = () => {
       {errorrMessage && (
         <ErrorComponent data={{ path: "login", Message: errorrMessage }} />
       )}
-      {loginLoading && <AllBusinessLoader /> }
+      {loginLoading && <AllBusinessLoader />}
 
       <div className="flex flex-row justify-center h-screen ">
         <div className="w-full md:w-1/2 bg-palatteFour dark:bg-darkbg flex justify-center items-center">

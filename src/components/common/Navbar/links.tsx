@@ -1,5 +1,5 @@
 "use client";
-import React, { forwardRef, ReactNode } from 'react';
+import React from 'react';
 import * as Menubar from '@radix-ui/react-menubar';
 
 import {menuCategories} from './products';

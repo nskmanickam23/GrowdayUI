@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import BusinessCard from "@/components/cards/businessCard";
-import AllBusinessLoader from "@/components/loaders/AllBusinessLoader";
+import Loader from "@/components/loaders/Loader";
 import AddBusinessPopup from "@/components/popups/AddBusinessPopup";
 import { ChevronDown, Filter, Search } from "lucide-react";
 import {
@@ -12,7 +12,7 @@ import {
   saveBusiness,
 } from "@/application/reducers/business-reducer";
 
-const BusinessPage = ({  }) => {
+const BusinessPage = ({ }) => {
   const dispatch = useDispatch();
   const { data: getBusinessData, loading: getBusinessLoading, error: getBusinessError } = useSelector(businessSelectors.getBusinesses);
   const { loading: getAddBusinessLoading } = useSelector(businessSelectors.saveBusiness)
@@ -155,7 +155,7 @@ const BusinessPage = ({  }) => {
       {getBusinessLoading || getAddBusinessLoading ? (
         <div>
           {/* Display loader */}
-          <AllBusinessLoader />
+          <Loader />
         </div>
       ) : (
         <div>
