@@ -39,6 +39,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
     // localStorage.setItem('businessID', id);
   };
 
+  
   const handleChangeStatus = (newStatus: boolean) => {
     const newData = {
       name: name,
@@ -52,7 +53,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
 
   return (
     <a
-      href={`/${name}`}
+      href={`/${name.replace(/\s/g, "")}`}
       onClick={() => setIdInLocalStorage(id)}
       target="_blank"
       rel="noopener noreferrer"

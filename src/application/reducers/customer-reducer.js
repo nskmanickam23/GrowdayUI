@@ -3,7 +3,8 @@ import api from "../services/axios/axios";
 
 const customerSelectors = {
   getAllCustomers: (state) => state.customers.getAllCustomers,
-  addNewCustomer: (state) => state.customers.addNewCustomer
+  addNewCustomer: (state) => state.customers.addNewCustomer,
+  editCustomer:(state)=>state.customers.editCustomer,
 };
 
 const getAllCustomers = createAsyncThunk(
@@ -18,7 +19,7 @@ const getAllCustomers = createAsyncThunk(
 const addNewCustomer = createAsyncThunk(
   "post/customers/add",
   async (customerData) => {
-    console.log(customerData,"----");
+    console.log(customerData, "----");
     const response = await api.customers.saveCusomer(customerData);
     return response;
   }
@@ -27,7 +28,7 @@ const addNewCustomer = createAsyncThunk(
 const editCustomer = createAsyncThunk(
   "post/customers/edit",
   async (customerData) => {
-    const token = getState()?.auth.token;
+    console.log(customerData,"=====cusomer data from edit reducer....");
     const localToken = localStorage.getItem('token');
     const response = await api.customers.editCustomer(customerData, localToken);
     return response;
@@ -41,6 +42,11 @@ const initialState = {
     error: "",
   },
   addNewCustomer: {
+    loading: false,
+    data: {},
+    error: "",
+  },
+  editCustomer: {
     loading: false,
     data: {},
     error: "",
@@ -76,6 +82,18 @@ const customersSlice = createSlice({
       .addCase(addNewCustomer.rejected, (state, { error }) => {
         state.addNewCustomer.loading = false;
         state.addNewCustomer.error = error.message;
+      })
+      .addCase(editCustomer.pending, (state) => {
+        state.editCustomer.loading = true;
+        state.editCustomer.error = initialState.error;
+      })
+      .addCase(editCustomer.fulfilled, (state, { payload }) => {
+        state.editCustomer.loading = false;
+        state.editCustomer.data = payload?.data;
+      })
+      .addCase(editCustomer.rejected, (state, { error }) => {
+        state.editCustomer.loading = false;
+        state.editCustomer.error = error.message;
       })
   },
 });
