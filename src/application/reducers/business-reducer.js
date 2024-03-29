@@ -4,7 +4,7 @@ import api from "../services/axios/axios";
 const businessSelectors = {
   getBusinesses: (state) => state.business.getBusinesses,
   saveBusiness: (state) => state.business.saveBusiness,
-  editBusiness:(state)=>state.business.editBusiness,
+  editBusiness: (state) => state.business.editBusiness,
   fetchBusinessById: (state) => state.business.fetchBusinessById,
 };
 
@@ -34,7 +34,7 @@ const saveBusiness = createAsyncThunk(
 const editBusiness = createAsyncThunk(
   "post/business/edit",
   async (businessData) => {
-    const token = getState()?.auth.token;
+    console.log(businessData, "data is here----");
     const localToken = localStorage.getItem('token');
     const response = await api.business.editBusiness(businessData, localToken);
     return response;
@@ -148,7 +148,7 @@ const businessSlice = createSlice({
         state.fetchBusinessById.loading = false;
         state.fetchBusinessById.error = error.message;
       });
-    
+
   },
 });
 

@@ -1,30 +1,49 @@
 "use client";
-import React, { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import {
   businessSelectors,
   fetchBusinessById,
+  getBusinesses
 } from "@/application/reducers/business-reducer";
 import Loader from "@/components/loaders/Loader";
 
 const Page = ({ params }) => {
   const dispatch = useDispatch();
-  const {
-    data: getBusiness,
-    loading: getLoading,
-    error: getError,
-  } = useSelector(businessSelectors.fetchBusinessById);
+  // const {
+  //   data: getSingleBusiness,
+  //   loading: getLoading,
+  //   error: getError,
+  // } = useSelector(businessSelectors.fetchBusinessById);
 
-  // const businessIdFromStorage = localStorage.getItem('businessID');
+  const [currentBusiness, setCurrentBusiness] = useState(null);
+
+  const {
+    data: getAllBusiness,
+    loading: getAllBusinessLoading,
+    error:getAllBusinessError
+  }=useSelector(businessSelectors.getBusinesses)
+
+  const URL = params.slug[0];
+
   useEffect(() => {
-    const businessIdFromStorage =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem("businessID")
-        : null;
-    dispatch(fetchBusinessById(businessIdFromStorage));
+    dispatch(getBusinesses())
   }, [dispatch]);
+
+
+  useEffect(() => {
+    if (Array.isArray(getAllBusiness) && URL) {
+      const matchingBusiness = getAllBusiness.find(
+        business => business.business_url.split("/")[1] === URL
+      );
+      if (matchingBusiness) {
+        setCurrentBusiness(matchingBusiness);
+      }
+    }
+  }, [getAllBusiness, URL]);
+
 
   return (
     <>
@@ -33,7 +52,7 @@ const Page = ({ params }) => {
           {/* navbar */}
           <div className="w-full  flex flex-row h-[7%] border-b-[1px] border-b-lightborder dark:border-b-darkborder justify-between">
             <div className="p-3 pl-5 font-bold text-xl">
-              {getBusiness?.name}
+              {currentBusiness && currentBusiness.name}
             </div>
             <div className="flex flex-row select-none items-center space-x-2 pr-5 text-lightbg dark:text-darktext">
               <div className="p-[1%] ">
@@ -47,7 +66,7 @@ const Page = ({ params }) => {
                     <Dialog.Overlay className="bg-blackA6 data-[state=open]:animate-overlayShow fixed inset-0" />
                     <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none">
                       <Dialog.Title className="text-mauve12 m-0 text-[19px] text-center font-black">
-                        Welcome to {getBusiness?.name}
+                        Welcome to  {currentBusiness && currentBusiness.name}
                       </Dialog.Title>
                       <Dialog.Description className="text-mauve11 text-center mt-[10px] mb-5 text-[18px] font-bold leading-normal">
                         Login
@@ -118,7 +137,8 @@ const Page = ({ params }) => {
                       <Dialog.Overlay className="bg-blackA6 data-[state=open]:animate-overlayShow fixed inset-0" />
                       <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-white p-[25px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] focus:outline-none">
                         <Dialog.Title className="text-mauve12 m-0 text-[19px] text-center font-black">
-                          Welcome to {getBusiness?.name}
+                          Welcome to {currentBusiness && currentBusiness.name}
+
                         </Dialog.Title>
                         <Dialog.Description className="text-mauve11 text-center mt-[10px] mb-5 text-[18px] font-bold leading-normal">
                           Register here
@@ -205,18 +225,19 @@ const Page = ({ params }) => {
               </div>
             </div>
           </div>
+         
           <div className="p-10">
-            {getLoading ? (
-              <Loader />
-            ) : getBusiness ? (
+            {currentBusiness ? (
               <div className="flex flex-col justify-center items-center  rounded-xl p-10">
                 <div className="text-5xl ">
                   Welcome to{" "}
-                  <span className="font-bold"> {getBusiness.name}</span>{" "}
+                  <span className="font-bold">{currentBusiness.name}</span>{" "}
                 </div>
-                <div>{getBusiness.description}</div>
+                <div>{currentBusiness.description}</div>
               </div>
-            ) : null}
+            ) : (
+              <Loader />
+            )}
           </div>
         </main>
       </div>

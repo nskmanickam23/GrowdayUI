@@ -1,16 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Edit, Trash } from "lucide-react"; // Make sure to import these icons
-
 import {
   addNewCustomer,
   getAllCustomers,
-  customerSelectors
+  customerSelectors,
+  editCustomer
 } from "@/application/reducers/customer-reducer";
 import { useDispatch, useSelector } from "react-redux";
 import AddCustomerPopup from "@/components/popups/AddCustomerPopup";
-import Loader from "@/components/loaders/Loader"; // Import loader component
+import Loader from "@/components/loaders/Loader";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   businessSelectors,
   getBusinesses,
@@ -19,46 +21,70 @@ import {
 const CustomerDetailsPage = () => {
   const dispatch = useDispatch();
   const { data: getCustomers, loading: getCustomersLoading, error: getCustomersError } = useSelector(customerSelectors.getAllCustomers);
+  const { data: newCustomerData, loading: newCustomerLoading, error: newCustomerError } = useSelector(customerSelectors.addNewCustomer);
+  const { data: getBusinessData, loading: getBusinessLoading, error: getBusinessError } = useSelector(businessSelectors.getBusinesses);
+  const { data: getCutomerEdit, loading: getCutomerEditLoading, error: getCutomerEditError } = useSelector(customerSelectors.editCustomer)
+
+  const [editedCustomer, setEditedCustomer] = useState({ name: '', email: '', phone: '' });
+
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [editingCustomer, setEditingCustomer] = useState(null);
-
-
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const [isAddCustomerPopupOpen, setAddCustomerPopupOpen] = useState(false);
 
-  const { data: getBusinessData, loading: getBusinessLoading, error: getBusinessError } = useSelector(businessSelectors.getBusinesses);
-
-
   useEffect(() => {
-    console.log("dispacting det all customers");
     dispatch(getAllCustomers())
     dispatch(getBusinesses());
   }, [dispatch])
 
-
-  console.log(getCustomers, "data--");
-  console.log(getBusinessData, "business---");
-  
   useEffect(() => {
     setCustomers(getCustomers);
   }, [getCustomers, setCustomers]);
 
-
-  console.log(customers, "data--");
+  useEffect(() => {
+    if (getCustomersError) {
+      toast.error('Error fetching customers');
+    }
+    if (newCustomerError) {
+      toast.error('Error adding new customer');
+    }
+  }, [getCustomersError, newCustomerError, newCustomerData]);
 
 
   const handleEdit = (customerId) => {
     setEditingCustomer(customerId);
+    const customer = getCustomers.find(customer => customer._id.$oid === customerId);
+    if (customer) {
+      setEditedCustomer({ name: customer.name, email: customer.email, phone: customer.phone });
+    }
   };
 
-  const handleSaveEdit = async () => { };
+  const handleSaveEdit = async () => {
+    console.log(editedCustomer);
+    dispatch(editCustomer(editedCustomer));
+    setEditingCustomer(null);
+  };
 
-  const handleCancelEdit = () => { };
+  const handleCancelEdit = () => {
+    setEditingCustomer(null);
+  };
 
-  const handleDelete = async (customerId) => { };
+  const handleDelete = async (customerId) => {
+    // Implement delete logic here
+  };
+
+
+
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedCustomer(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
 
   const handleAddCustomerClick = () => {
     setAddCustomerPopupOpen(true);
@@ -77,11 +103,14 @@ const CustomerDetailsPage = () => {
 
   return (
     <div className=" border-black p-10 rounded h-full">
+
+      <ToastContainer position="top-right" />
       <div className="flex flex-row pb-4 mb-5 ">
         <div>
           <h1 className="text-xl font-bold">All customers data</h1>
           <h1 className="font-extralight text-sm text-gray-500">
             See all your customers here!
+            {newCustomerError}
           </h1>
         </div>
 
@@ -113,19 +142,72 @@ const CustomerDetailsPage = () => {
               </tr>
             </thead>
             <tbody>
-              {Array.isArray(getCustomers) && getCustomers.map((getCustomers) => (
-                <tr key={getCustomers._id.$oid} className="border-b">
-                  <td className="text-left py-2">{getCustomers.name}</td>
-                  <td className="text-left py-2">{getCustomers.email}</td>
-                  <td className="text-left py-2">{new Date(getCustomers.created_at.$date).toLocaleDateString()}</td>
-                  <td className="text-left py-2">{getCustomers.phone}</td>
+              {Array.isArray(getCustomers) && getCustomers.map((customer) => (
+                <tr key={customer._id.$oid} className="border-b">
                   <td className="text-left py-2">
-                    <button onClick={() => handleEdit(getCustomers._id.$oid)} className="text-blue-500 mr-2">
-                      <Edit size={20} />
-                    </button>
-                    <button onClick={() => handleDelete(getCustomers._id.$oid)} className="text-red-500">
-                      <Trash size={20} />
-                    </button>
+                    {editingCustomer === customer._id.$oid ? (
+                      <input
+                        type="text"
+                        name="name"
+                        value={editedCustomer.name}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      customer.name
+                    )}
+                  </td>
+                  <td className="text-left py-2">
+
+                    {customer.email}
+
+                  </td>
+                  <td className="text-left py-2">
+                    {new Date(customer.created_at.$date).toLocaleDateString()}
+                  </td>
+                  <td className="text-left py-2">
+                    {editingCustomer === customer._id.$oid ? (
+                      <input
+                        type="text"
+                        name="phone"
+                        value={editedCustomer.phone}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      customer.phone
+                    )}
+                  </td>
+                  <td className="text-left py-2">
+                    {editingCustomer === customer._id.$oid ? (
+                      <div>
+                        <button
+                          className="text-green-500 mr-2"
+                          onClick={handleSaveEdit}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="text-gray-500"
+                          onClick={handleCancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <button
+                          className="text-blue-500 mr-2"
+                          onClick={() => handleEdit(customer._id.$oid)}
+                        >
+                          <Edit size={20} />
+                        </button>
+                        <button
+                          className="text-red-500"
+                          onClick={() => handleDelete(customer._id.$oid)}
+                        >
+                          <Trash size={20} />
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
